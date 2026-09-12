@@ -334,6 +334,83 @@
     }
   });
 
+  /* ---------------- 工艺透视：聚光灯蒙版 ----------------
+     移植自用户提供的 React 实现：鼠标平滑追踪 (ease 0.1) +
+     网格视差 (ease 0.06, ±16px) + 径向渐变蒙版 (R=260)。
+     改进：CSS mask 替代逐帧 canvas.toDataURL（GPU 友好），
+     增加触屏支持与闲置自动巡游。 */
+  (function craftSpotlight() {
+    var stage = $("#craftStage"), reveal = $("#craftReveal"), grid = $("#craftGrid");
+    if (!stage || !reveal) return;
+
+    var SPOT_R = 260, GRID_RANGE = 16;
+    if (window.innerWidth < 640) SPOT_R = 190;
+    reveal.style.setProperty("--r", SPOT_R + "px");
+
+    var mouse = null;          // 目标位置（相对 stage）
+    var smooth = null;         // 平滑位置
+    var gridOff = { x: 0, y: 0 };
+    var lastInteract = 0;      // 最近交互时间
+    var running = false, rafId = null;
+    var t0 = performance.now();
+
+    function stageRect() { return stage.getBoundingClientRect(); }
+
+    function onMove(clientX, clientY) {
+      var r = stageRect();
+      mouse = { x: clientX - r.left, y: clientY - r.top };
+      if (!smooth) smooth = { x: mouse.x, y: mouse.y };
+      lastInteract = performance.now();
+    }
+
+    stage.addEventListener("pointermove", function (e) { onMove(e.clientX, e.clientY); }, { passive: true });
+    stage.addEventListener("pointerdown", function (e) { onMove(e.clientX, e.clientY); }, { passive: true });
+
+    function frame(now) {
+      var r = stageRect();
+      var idle = now - lastInteract > 3500;
+
+      // 闲置 3.5s 后自动巡游（利萨如轨迹），让手机用户也能看到效果
+      if (idle || !mouse) {
+        var t = (now - t0) / 1000;
+        mouse = {
+          x: r.width * 0.5 + Math.sin(t * 0.5) * r.width * 0.3,
+          y: r.height * 0.5 + Math.sin(t * 0.33) * r.height * 0.24
+        };
+      }
+      if (!smooth) smooth = { x: mouse.x, y: mouse.y };
+
+      smooth.x += (mouse.x - smooth.x) * 0.1;
+      smooth.y += (mouse.y - smooth.y) * 0.1;
+
+      reveal.style.setProperty("--mx", smooth.x + "px");
+      reveal.style.setProperty("--my", smooth.y + "px");
+
+      // 网格视差
+      var cx = smooth.x / r.width - 0.5, cy = smooth.y / r.height - 0.5;
+      gridOff.x += (cx * GRID_RANGE - gridOff.x) * 0.06;
+      gridOff.y += (cy * GRID_RANGE - gridOff.y) * 0.06;
+      grid.style.setProperty("--gx", gridOff.x + "px");
+      grid.style.setProperty("--gy", gridOff.y + "px");
+
+      if (running) rafId = requestAnimationFrame(frame);
+    }
+
+    // 仅在可视区域内运行动画循环
+    new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting && !running) {
+        running = true;
+        rafId = requestAnimationFrame(frame);
+      } else if (!entries[0].isIntersecting && running) {
+        running = false;
+        cancelAnimationFrame(rafId);
+      }
+    }, { threshold: 0.05 }).observe(stage);
+
+    // 首次进入时给出提示性初始位置
+    lastInteract = 0;
+  })();
+
   /* ---------------- 初始化 ---------------- */
   calcCabinet();
   calcWindow();
