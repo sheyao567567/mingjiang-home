@@ -569,7 +569,10 @@ input[type="range"]::-moz-range-thumb {
   position: absolute; inset: 0;
   background-position: center; background-size: cover; background-repeat: no-repeat;
 }
-.craft-base { background-image: url("assets/craft-base.jpg"); z-index: 1; }
+.craft-base { z-index: 1; }
+.craft-base--wardrobe { background-image: url("assets/craft-base.jpg"); }
+.craft-base--kitchen { background-image: url("assets/craft-kitchen-base.jpg"); }
+.craft-base--tv { background-image: url("assets/craft-tv-base.jpg"); }
 .craft-grid {
   position: absolute; inset: -48px; z-index: 2; pointer-events: none; opacity: 0.35;
   background-image:
@@ -579,7 +582,7 @@ input[type="range"]::-moz-range-thumb {
   transition: transform 0.1s linear;
 }
 .craft-detail {
-  background-image: url("assets/craft-detail.jpg"); z-index: 3; pointer-events: none;
+  z-index: 3; pointer-events: none;
   -webkit-mask-image: radial-gradient(circle var(--r, 260px) at var(--mx, 50%) var(--my, 50%),
     rgba(0,0,0,1) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.75) 60%,
     rgba(0,0,0,0.4) 75%, rgba(0,0,0,0.12) 88%, rgba(0,0,0,0) 100%);
@@ -587,6 +590,9 @@ input[type="range"]::-moz-range-thumb {
     rgba(0,0,0,1) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.75) 60%,
     rgba(0,0,0,0.4) 75%, rgba(0,0,0,0.12) 88%, rgba(0,0,0,0) 100%);
 }
+.craft-detail--wardrobe { background-image: url("assets/craft-detail.jpg"); }
+.craft-detail--kitchen { background-image: url("assets/craft-kitchen-detail.jpg"); }
+.craft-detail--tv { background-image: url("assets/craft-tv-detail.jpg"); }
 .craft-content {
   position: absolute; left: 24px; bottom: 88px; z-index: 5; pointer-events: none;
   color: var(--paper); max-width: 420px;

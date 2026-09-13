@@ -340,8 +340,13 @@
      改进：CSS mask 替代逐帧 canvas.toDataURL（GPU 友好），
      增加触屏支持与闲置自动巡游。 */
   (function craftSpotlight() {
-    var stage = $("#craftStage"), reveal = $("#craftReveal"), grid = $("#craftGrid");
-    if (!stage || !reveal) return;
+    var stages = $$(".craft-stage");
+    if (!stages.length) return;
+
+    stages.forEach(function (stage) {
+    var reveal = stage.querySelector(".craft-detail");
+    var grid = stage.querySelector(".craft-grid");
+    if (!reveal || !grid) return;
 
     var SPOT_R = 260, GRID_RANGE = 16;
     if (window.innerWidth < 640) SPOT_R = 190;
@@ -409,6 +414,7 @@
 
     // 首次进入时给出提示性初始位置
     lastInteract = 0;
+    });
   })();
 
   /* ---------------- 初始化 ---------------- */
