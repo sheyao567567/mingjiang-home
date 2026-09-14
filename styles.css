@@ -1,5 +1,5 @@
 /* ============================================================
-   铭匠全屋定制工厂 · 获客单页
+   择锦全屋定制工厂 · 获客单页
    设计系统：暖白 × 暖黑 ｜ 原研哉式留白 × 瑞士网格
    无渐变 · 无阴影 · 极细分隔线 · 直角建筑感
    ============================================================ */
@@ -159,41 +159,53 @@ input, textarea { font-family: inherit; }
 }
 .hero-bg {
   position: absolute; inset: 0;
-  background: var(--ink) url("assets/hero.jpg") center / cover no-repeat;
-  transform: scale(1.05);
-  animation: heroZoom 16s ease-out forwards;
+  background: var(--ink) url("assets/hero-new.jpg") center 32% / cover no-repeat;
+  transform: scale(1.08);
+  animation: heroZoom 10s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes heroZoom { to { transform: scale(1); } }
 .hero-mask {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(27, 25, 22, 0.45) 0%, rgba(27, 25, 22, 0.25) 40%, rgba(27, 25, 22, 0.82) 100%);
+  background:
+    linear-gradient(90deg, rgba(20, 18, 15, 0.45) 0%, rgba(20, 18, 15, 0) 58%),
+    linear-gradient(180deg, rgba(20, 18, 15, 0.4) 0%, rgba(20, 18, 15, 0.08) 42%, rgba(20, 18, 15, 0.9) 100%);
 }
 .hero-content {
   position: relative; z-index: 2; width: 100%; max-width: 1160px;
-  margin: 0 auto; padding: 140px 24px 96px;
+  margin: 0 auto; padding: 140px 24px 88px;
 }
 .hero-eyebrow {
-  font-size: 11px; letter-spacing: 0.46em; color: rgba(245, 243, 238, 0.65);
-  margin-bottom: 24px; font-weight: 500;
+  font-size: 11px; letter-spacing: 0.5em; color: rgba(245, 243, 238, 0.72);
+  margin-bottom: 28px; font-weight: 500;
+  display: flex; align-items: center; gap: 16px;
 }
+.hero-eyebrow::before { content: ""; width: 36px; height: 1px; background: rgba(245, 243, 238, 0.5); flex: none; }
 .hero-title {
   font-family: var(--serif);
-  font-size: clamp(30px, 6.8vw, 56px);
-  font-weight: 600; line-height: 1.5; letter-spacing: 0.06em;
-  max-width: 16em;
+  font-size: clamp(42px, 9vw, 92px);
+  font-weight: 600; line-height: 1.16; letter-spacing: 0.1em;
 }
 .hero-sub {
-  margin-top: 22px; font-size: clamp(13px, 3.4vw, 16px);
-  letter-spacing: 0.3em; color: rgba(245, 243, 238, 0.75); font-weight: 300;
+  margin-top: 28px; font-size: clamp(13px, 3.4vw, 15px);
+  letter-spacing: 0.3em; color: rgba(245, 243, 238, 0.85); font-weight: 300;
+  line-height: 2.2;
 }
+.hero-sub-line { color: rgba(245, 243, 238, 0.52); font-size: 12.5px; letter-spacing: 0.26em; }
 .hero-btns { margin-top: 48px; display: flex; gap: 14px; flex-wrap: wrap; }
 .hero-trust {
-  margin-top: 64px; padding-top: 26px;
-  border-top: 1px solid rgba(245, 243, 238, 0.18);
+  margin-top: 60px; padding-top: 24px;
+  border-top: 1px solid rgba(245, 243, 238, 0.16);
   display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
   font-size: 12px; letter-spacing: 0.22em; color: rgba(245, 243, 238, 0.55);
 }
 .hero-trust i { width: 24px; height: 1px; background: rgba(245, 243, 238, 0.3); border-radius: 0; }
+/* 首屏入场：逐项错峰上浮 */
+.hero-content .reveal { transition-duration: 1s; }
+.hero-content .reveal:nth-child(1) { transition-delay: 0.15s; }
+.hero-content .reveal:nth-child(2) { transition-delay: 0.3s; }
+.hero-content .reveal:nth-child(3) { transition-delay: 0.45s; }
+.hero-content .reveal:nth-child(4) { transition-delay: 0.6s; }
+.hero-content .reveal:nth-child(5) { transition-delay: 0.75s; }
 .hero-scroll {
   position: absolute; bottom: 0; right: 24px; z-index: 2;
   width: 1px; height: 72px; border: none; border-radius: 0;
@@ -205,7 +217,12 @@ input, textarea { font-family: inherit; }
   animation: scrollDot 2s infinite;
 }
 @keyframes scrollDot { 0% { top: 0; opacity: 1; } 100% { top: 52px; opacity: 0; } }
-@media (max-width: 640px) { .hero-scroll { display: none; } }
+@media (max-width: 640px) {
+  .hero-scroll { display: none; }
+  .hero-eyebrow { letter-spacing: 0.3em; font-size: 10px; gap: 12px; }
+  .hero-eyebrow::before { width: 24px; }
+  .hero-title { letter-spacing: 0.06em; }
+}
 
 /* ---------- 服务项目 ---------- */
 .svc-grid {
@@ -617,6 +634,66 @@ input[type="range"]::-moz-range-thumb {
 @media (max-width: 640px) {
   .craft-stage { height: 72svh; }
   .craft-content { bottom: 72px; }
+}
+
+/* ---------- 工艺透视 · 细节跳转 icon ---------- */
+.craft-more {
+  position: absolute; top: 20px; right: 20px; z-index: 6;
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 9px 16px 9px 9px;
+  background: rgba(20, 18, 15, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(245, 243, 238, 0.3); border-radius: 0;
+  color: var(--paper); font-size: 11px; letter-spacing: 0.2em;
+  cursor: pointer; transition: background 0.3s, border-color 0.3s;
+}
+.craft-more:hover { background: rgba(20, 18, 15, 0.7); border-color: rgba(245, 243, 238, 0.65); }
+.craft-more:active { transform: scale(0.97); }
+.craft-more-icon {
+  position: relative; width: 24px; height: 24px; flex: none;
+  display: grid; place-items: center;
+  background: var(--paper); color: var(--ink);
+  font-size: 14px; line-height: 1;
+}
+.craft-more-icon::after {
+  content: ""; position: absolute; inset: -5px;
+  border: 1px solid rgba(245, 243, 238, 0.45);
+  animation: morePulse 2.2s ease-out infinite;
+}
+@keyframes morePulse {
+  0% { opacity: 0.9; transform: scale(0.8); }
+  70% { opacity: 0; transform: scale(1.35); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+@media (min-width: 860px) { .craft-more { top: 32px; right: 48px; } }
+
+/* ---------- 工艺细节弹层 ---------- */
+.dmodal-box { max-width: 520px; }
+@media (min-width: 860px) { .dmodal-box { max-width: 920px; padding: 44px 48px calc(40px + env(safe-area-inset-bottom)); } }
+.dmodal-eyebrow { font-size: 10.5px; letter-spacing: 0.42em; color: var(--muted-l); margin-bottom: 10px; font-weight: 500; }
+.dmodal-grid { display: grid; gap: 22px; grid-template-columns: 1fr; margin: 24px 0 28px; }
+@media (min-width: 720px) { .dmodal-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+.dmodal-card { margin: 0; }
+.dmodal-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; background: var(--ink-2); }
+.dmodal-card figcaption { padding-top: 14px; }
+.dmodal-card b { display: block; font-size: 14px; font-weight: 600; letter-spacing: 0.12em; margin-bottom: 7px; }
+.dmodal-card span { font-size: 12px; color: var(--muted-l); line-height: 1.9; letter-spacing: 0.04em; }
+
+/* ---------- 工厂实力条（并入预约咨询板块） ---------- */
+.factory-strip {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  background: var(--ink); border: 1px solid var(--ink);
+}
+@media (min-width: 760px) { .factory-strip { grid-template-columns: repeat(4, 1fr); } }
+.factory-strip .stat { border-right: 1px solid var(--line-d); border-bottom: 1px solid var(--line-d); }
+.factory-note {
+  font-size: 12px; letter-spacing: 0.2em; color: var(--muted-l);
+  text-align: center; margin: 20px 0 48px;
+}
+
+/* ---------- 首屏移动端减负 ---------- */
+@media (max-width: 640px) {
+  .hero-trust { display: none; }
+  .hero-content { padding-bottom: 72px; }
 }
 
 /* ---------- 滚动进场 ---------- */

@@ -1,5 +1,5 @@
 /* ============================================================
-   铭匠全屋定制工厂 · 交互逻辑
+   择锦全屋定制工厂 · 交互逻辑
    纯原生 JS，无依赖；表单提交处预留后端接口位置（见 submitLead）
    ============================================================ */
 (function () {
@@ -54,7 +54,7 @@
     });
     statIO.disconnect();
   }, { threshold: 0.3 });
-  var statRow = $(".stat-row");
+  var statRow = $(".factory-strip");
   if (statRow) statIO.observe(statRow);
 
   /* ---------------- 报价：通用小部件 ---------------- */
@@ -128,45 +128,6 @@
   cabArea.addEventListener("input", function () { cabAreaRange.value = cabArea.value || 0; calcCabinet(); });
   cabAreaRange.addEventListener("input", function () { cabArea.value = cabAreaRange.value; calcCabinet(); });
 
-  /* ---------------- 门窗报价 ---------------- */
-  var winArea = $("#winArea"), winAreaRange = $("#winAreaRange"), winSash = $("#winSash");
-  var sashCount = 2;
-
-  function glassName() {
-    return $("#winGlass .chip.active").childNodes[0].textContent.trim();
-  }
-  function profileName() {
-    return $("#winProfile .chip.active").childNodes[0].textContent.trim();
-  }
-
-  function calcWindow() {
-    var raw = Math.max(0, parseFloat(winArea.value) || 0);
-    var area = raw > 0 ? Math.max(5, raw) : 0; // 不足 5㎡ 按 5㎡ 起算
-    var profile = chipPrice("#winProfile");
-    var glass = chipPrice("#winGlass");
-    var unit = profile + glass;
-    var base = area * unit;
-    var sashCost = sashCount * 480;
-    var total = base + sashCost;
-
-    var lines = [
-      { k: "窗体 · " + profileName() + " · " + area + "㎡ × ¥" + fmt(unit), v: base },
-      { k: "玻璃 · " + glassName(), v: glass * area, labelOnly: glass === 0 },
-      { k: "开扇 · " + sashCount + " 扇 × ¥480", v: sashCost }
-    ];
-    renderLines("#winLines", lines, total);
-    $("#winTotal").textContent = fmt(total);
-    winSash.textContent = sashCount;
-    $("#winSashMinus").disabled = sashCount <= 0;
-  }
-
-  bindChips("#winProfile", calcWindow);
-  bindChips("#winGlass", calcWindow);
-  winArea.addEventListener("input", function () { winAreaRange.value = winArea.value || 0; calcWindow(); });
-  winAreaRange.addEventListener("input", function () { winArea.value = winAreaRange.value; calcWindow(); });
-  $("#winSashMinus").addEventListener("click", function () { sashCount = Math.max(0, sashCount - 1); calcWindow(); });
-  $("#winSashPlus").addEventListener("click", function () { sashCount += 1; calcWindow(); });
-
   function renderLines(sel, lines, total) {
     var ul = $(sel);
     ul.innerHTML = "";
@@ -189,48 +150,19 @@
     ul.appendChild(li);
   }
 
-  /* ---------------- 报价 Tab 切换 ---------------- */
-  function switchTab(name) {
-    $$(".quote-tab").forEach(function (t) { t.classList.toggle("active", t.dataset.tab === name); });
-    $("#panelCabinet").classList.toggle("active", name === "cabinet");
-    $("#panelWindow").classList.toggle("active", name === "window");
-  }
-  $$(".quote-tab").forEach(function (t) {
-    t.addEventListener("click", function () { switchTab(t.dataset.tab); });
-  });
-  $$("[data-quote-tab]").forEach(function (a) {
-    a.addEventListener("click", function () { switchTab(a.dataset.quoteTab); });
-  });
-
-  /* ---------------- 案例筛选 ---------------- */
-  $("#caseTabs").addEventListener("click", function (e) {
-    var btn = e.target.closest(".case-tab");
-    if (!btn) return;
-    $$(".case-tab").forEach(function (t) { t.classList.toggle("active", t === btn); });
-    var cat = btn.dataset.cat;
-    $$(".case-card").forEach(function (card) {
-      var show = cat === "all" || card.dataset.cat === cat;
-      card.classList.toggle("hide", !show);
-      if (show) { card.classList.remove("in"); requestAnimationFrame(function () { card.classList.add("in"); }); }
-    });
-  });
-
   /* ---------------- 预约弹窗 ---------------- */
   var modal = $("#bookingModal");
   var modalQuoteText = $("#modalQuoteText");
   var lastQuoteSummary = "";
 
-  function currentSummary(kind) {
-    if (kind === "window") {
-      return "门窗报价 · " + (parseFloat(winArea.value) || 0) + "㎡ · " + profileName() +
-        " · " + glassName() + " · 开扇 " + sashCount + " · 预估 ¥" + $("#winTotal").textContent;
-    }
+  function currentSummary() {
     return "柜体报价 · " + (parseFloat(cabArea.value) || 0) + "㎡ · " + boardName() +
       " · 预估 ¥" + $("#cabTotal").textContent;
   }
 
   function openModal(kind) {
-    lastQuoteSummary = kind ? currentSummary(kind) : "";
+    closeDetail();
+    lastQuoteSummary = kind ? currentSummary() : "";
     if (lastQuoteSummary) {
       modalQuoteText.textContent = lastQuoteSummary;
       modalQuoteText.classList.add("show");
@@ -248,7 +180,29 @@
     b.addEventListener("click", function () { openModal(b.dataset.quote || null); });
   });
   $$("[data-close-booking]").forEach(function (b) { b.addEventListener("click", closeModal); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+
+  /* ---------------- 工艺细节弹层 ---------------- */
+  var detailModal = $("#detailModal"), detailTitle = $("#detailTitle");
+
+  function openDetail(scene) {
+    closeModal();
+    detailTitle.textContent = (scene || "柜体") + " · 材质与工艺";
+    detailModal.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeDetail() {
+    if (!detailModal) return;
+    detailModal.classList.remove("open");
+    if (!modal.classList.contains("open")) document.body.style.overflow = "";
+  }
+  $$(".craft-more").forEach(function (b) {
+    b.addEventListener("click", function () { openDetail(b.dataset.detail); });
+  });
+  $$("[data-close-detail]").forEach(function (b) { b.addEventListener("click", closeDetail); });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closeModal(); closeDetail(); }
+  });
 
   /* ---------------- 表单提交 ---------------- */
   function validPhone(v) { return /^1[3-9]\d{9}$/.test(v); }
@@ -419,5 +373,4 @@
 
   /* ---------------- 初始化 ---------------- */
   calcCabinet();
-  calcWindow();
 })();
